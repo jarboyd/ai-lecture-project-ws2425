@@ -89,7 +89,7 @@ def write_xml(files, filename, labels=[], skip_checks=False):
 
 
 if not os.path.isdir(splits_directory):
-    os.mkdir(splits_directory)
+    os.makedirs(splits_directory)
 for category, category_files in label_groups_files.items():
     if shuffle_files:
         shuffle(category_files)

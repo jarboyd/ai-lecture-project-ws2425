@@ -10,7 +10,7 @@ from hyperparams import (
 
 
 if not os.path.isdir(models_directory):
-    os.mkdir(models_directory)
+    os.makedirs(models_directory)
 
 
 def train(category):
