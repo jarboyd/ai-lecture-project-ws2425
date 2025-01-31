@@ -4,10 +4,16 @@ from collections import defaultdict
 from random import shuffle
 import xml.etree.cElementTree as ET
 import math
-from hyperparams import convert, shuffle_files, perf_take, train_split, upsample_limit
-
-current_directory = os.getcwd()
-dataset_path = os.path.join(current_directory, "FullIJCNN2013")
+from hyperparams import (
+    categories,
+    convert,
+    shuffle_files,
+    perf_take,
+    train_split,
+    upsample_limit,
+    dataset_path,
+    splits_directory,
+)
 
 if convert:
     for file in os.listdir(dataset_path):
@@ -26,33 +32,41 @@ with open(os.path.join(dataset_path, "gt.txt")) as f:
 el_dataset = ET.Element("dataset")
 el_images = ET.SubElement(el_dataset, "images")
 
-files = os.listdir(dataset_path)
-if shuffle_files:
-    shuffle(files)
-files = files[: int(len(files) * perf_take)]
-files_train = files[: int(len(files) * train_split)]
-files_test = files[int(len(files) * train_split) :]
+files = [file for file in os.listdir(dataset_path) if file.endswith(".ppm")]
+
+label_groups_files = {
+    key: [
+        file
+        for file in files
+        if any([label in labels for _, _, _, _, label in ground_truths[file]])
+    ]
+    for key, labels in categories.items()
+}
 
 min_box_area = math.pow(80, 2) * math.pow(2, -2 * upsample_limit)
 
 
-def write_xml(files, filename):
+def write_xml(files, filename, labels=[], skip_checks=False):
     num_images = 0
     num_boxes = 0
     for file in files:
-        if not file.endswith(".jpg"):
-            continue
-        boxes = ground_truths[file.replace(".jpg", ".ppm")]
+        boxes = [
+            (left, top, right, bottom, label)
+            for left, top, right, bottom, label in ground_truths[file]
+            if skip_checks or label in labels
+        ]
         suitable_boxes = [
             (left, top, right, bottom, label)
             for left, top, right, bottom, label in boxes
-            if (right - left) * (bottom - top) >= min_box_area
+            if skip_checks or (right - left) * (bottom - top) >= min_box_area
         ]
-        if len(boxes) > 0 and len(suitable_boxes) == 0:
+        if not skip_checks and len(boxes) > 0 and len(suitable_boxes) == 0:
             continue
         num_images += 1
         el_image = ET.SubElement(
-            el_images, "image", file=os.path.join(dataset_path, file)
+            el_images,
+            "image",
+            file=os.path.join(dataset_path, file.replace(".ppm", ".jpg")),
         )
         for left, top, right, bottom, label in suitable_boxes:
             num_boxes += 1
@@ -74,11 +88,36 @@ def write_xml(files, filename):
     return num_images, num_boxes
 
 
+if not os.path.isdir(splits_directory):
+    os.mkdir(splits_directory)
+for category, category_files in label_groups_files.items():
+    if shuffle_files:
+        shuffle(category_files)
+    category_files = category_files[: int(len(category_files) * perf_take)]
+    files_train = category_files[: int(len(category_files) * train_split)]
+    files_test = category_files[int(len(category_files) * train_split) :]
+    print(f"Generating file lists for category '{category}':")
+    num_images, num_boxes = write_xml(
+        files_train,
+        os.path.join(splits_directory, f"gtsdb-train_{category}.xml"),
+        categories[category],
+    )
+    print(
+        f"\tFound {num_images} out of {len(files_train)} suitable images with {num_boxes} boxes for training"
+    )
+    num_images, num_boxes = write_xml(
+        files_test,
+        os.path.join(splits_directory, f"gtsdb-test_{category}.xml"),
+        categories[category],
+    )
+    print(
+        f"\tFound {num_images} out of {len(files_test)} suitable images with {num_boxes} boxes for testing\n"
+    )
+
+print("Generating full file list for validation:")
 num_images, num_boxes = write_xml(
-    files_train, os.path.join(current_directory, "gtsdb-train.xml")
+    files, os.path.join(splits_directory, f"gtsdb-full.xml"), skip_checks=True
 )
-print(f"Found {num_images} suitable images with {num_boxes} boxes for training")
-num_images, num_boxes = write_xml(
-    files_test, os.path.join(current_directory, "gtsdb-test.xml")
+print(
+    f"\tFound {num_images} out of {len(files)} suitable images with {num_boxes} boxes for testing\n"
 )
-print(f"Found {num_images} suitable images with {num_boxes} boxes for training")

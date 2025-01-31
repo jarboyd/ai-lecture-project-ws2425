@@ -4,3 +4,4 @@ model.svm
 gtsdb-train.xml
 gtsdb-test.xml
 __pycache__/
+resources/
