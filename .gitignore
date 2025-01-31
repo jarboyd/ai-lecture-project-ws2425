@@ -1,0 +1,6 @@
+FullIJCNN2013.zip
+FullIJCNN2013/
+model.svm
+gtsdb-train.xml
+gtsdb-test.xml
+__pycache__/
