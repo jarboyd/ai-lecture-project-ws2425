@@ -29,9 +29,6 @@ with open(os.path.join(dataset_path, "gt.txt")) as f:
         name, x1, y1, x2, y2, label = line.split(";")
         ground_truths[name].append((int(x1), int(y1), int(x2), int(y2), int(label)))
 
-el_dataset = ET.Element("dataset")
-el_images = ET.SubElement(el_dataset, "images")
-
 files = [file for file in os.listdir(dataset_path) if file.endswith(".ppm")]
 
 label_groups_files = {
@@ -49,6 +46,8 @@ min_box_area = math.pow(80, 2) * math.pow(2, -2 * upsample_limit)
 def write_xml(files, filename, labels=[], skip_checks=False):
     num_images = 0
     num_boxes = 0
+    el_dataset = ET.Element("dataset")
+    el_images = ET.SubElement(el_dataset, "images")
     for file in files:
         boxes = [
             (left, top, right, bottom, label)
