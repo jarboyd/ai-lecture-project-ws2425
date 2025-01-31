@@ -15,7 +15,6 @@ categories = {
         10,
         15,
         16,
-        12,
     ],  # prohibitory, circular, double edge + priority road
     "mandatory": [33, 34, 35, 36, 37, 38, 39, 40],  # mandatory, circular, single edge
     "danger": [
@@ -44,6 +43,7 @@ categories = {
     "give_way": [13],  # other/give way, rectangular, single edge
     "stop": [14],  # other/stop, octagonal, single edge
     "no_entry": [17],  # other/no entry, single edge
+    "priority_road": [12] # other/priority road, diamond, double edge
 }
 
 # preprocessing
