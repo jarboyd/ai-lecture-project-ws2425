@@ -6,6 +6,10 @@ from hyperparams import (
     upsample_limit,
     categories,
     test_after_training,
+    be_verbose,
+    epsilon,
+    C,
+    num_threads,
 )
 
 
@@ -15,10 +19,10 @@ if not os.path.isdir(models_directory):
 
 def train(category):
     options = dlib.simple_object_detector_training_options()
-    options.be_verbose = True
-    options.epsilon = 0.001
-    options.C = 10
-    options.num_threads = 15
+    options.be_verbose = be_verbose
+    options.epsilon = epsilon
+    options.C = C
+    options.num_threads = num_threads
     options.upsample_limit = upsample_limit
 
     model_file = os.path.join(models_directory, f"model_{category}.svm")

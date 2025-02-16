@@ -95,6 +95,9 @@ for category, category_files in label_groups_files.items():
     category_files = category_files[: int(len(category_files) * perf_take)]
     files_train = category_files[: int(len(category_files) * train_split)]
     files_test = category_files[int(len(category_files) * train_split) :]
+    if len(files_test) == 0:
+        files_train = files_train[:-1]
+        files_test = files_train[-1:]
     print(f"Generating file lists for category '{category}':")
     num_images, num_boxes = write_xml(
         files_train,

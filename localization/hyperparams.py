@@ -43,7 +43,7 @@ categories = {
     "give_way": [13],  # other/give way, rectangular, single edge
     "stop": [14],  # other/stop, octagonal, single edge
     "no_entry": [17],  # other/no entry, single edge
-    "priority_road": [12] # other/priority road, diamond, double edge
+    "priority_road": [12],  # other/priority road, diamond, double edge
 }
 
 # preprocessing
@@ -56,15 +56,20 @@ train_split = 0.8
 
 # training
 # upsample images, heavy RAM usage; must be an integer
-upsample_limit = 2
+upsample_limit = 1
+epsilon = 0.001
+C = 10
 
 # performance
 # use only partial dataset to reduce RAM usage; must be in range (0,1)
 perf_take = 1
+num_threads = 15
 # test the dataset immediately after training; disable to save time
 test_after_training = True
 
 # miscellaneous
+# output/readability
+be_verbose = True
 # several directories used throughout the project
 __current_directory = os.getcwd()
 dataset_path = os.path.join(__current_directory, "FullIJCNN2013")
