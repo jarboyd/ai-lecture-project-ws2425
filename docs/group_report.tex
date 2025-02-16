@@ -164,6 +164,42 @@ In einem nächsten Durchlauf wurden die nach Formen getrennten Trainigs- und Tes
 
 Um die Erkennung von kleineren Objekten zu verbssern, kann das Bild hochskaliert werden, jedoch stark auf Kosten des verwendeten Arbeitsspeichers. Die verwendete Bibliothek ist auf eine Weise implementiert, sodass der gesamte Trainingsdatensatz vollständig in den Arbeitsspeicher geladen und hochskaliert wird. Verwendete Hardware limitierte daher auf maximal einfache Verdopplung der Auflösung.
 
+\section{Recognition mittels Convolutional Neural Network (CNN)}
+Zur Erkennung der Bildklassen/Straßenschilder wurde ein Convolutional Neural Network (CNN) implementiert. Die Architektur des Modells wurde
+durch eine Kombination aus grundlegendem theoretischem Verständnis der einzelnen Schichten und Trial-and-Error entwickelt.
+Während grundlegende Konzepte wie Faltungsschichten (Convolutional Layers), Aktivierungsfunktionen und Batch-Normalisierung
+bekannt waren, wurde die genaue Anordnung und Anzahl der Schichten durch einfaches Testen bestimmt.
+Zum trainieren, validieren und teste des Modells wurde der German Traffic Sign Recognition Benchmark (GTSRB) Datensatz genutzt, der
+im Vergleich zum GTSDB Datensatz schon lokalisierte Schilder enthält.
+
+\subsection{Modellarchitektur}
+Die Modellarchitektur wurde durch einen stumpfen Trial-and-Error Prozess entwickelt. Zwar bestand ein grundlegendes Verständnis
+für die einzelnen Schichten und ihre Funktion, jedoch wurde die endgültige Struktur experimentell bestimmt.
+Erst nachdem ein gut funktionierendes Modell gefunden war, wurde die genaue Zusammenarbeit der Schichten angeschaut und
+nachvollzogen. Das finale Modell besteht aus mehreren Convolutional Layers (Conv2D) mit ReLU-Aktivierung und Kernel-Regularisierung
+zur Merkmalsextraktion. Batch-Normalisierung stabilisiert den Trainingsprozess, während Max-Pooling-Schichten die räumlichen
+Dimensionen reduzieren und Overfitting entgegenwirken. Zusätzlich sorgen Dropout-Schichten für eine bessere Generalisierung.
+Abschließend übernimmt eine vollständig verbundene (Dense) Schicht mit Softmax-Aktivierung die Klassifikation der Eingabedaten.
+
+\subsection{Training des Modells}
+Die Trainingsbilder wurden zufällig um einen Winkel zwischen -10 und +10 Grad rotiert (layers.RandomRotation(0.1)). Dies soll das Modell
+robuster gegen leichte Drehungen und Orientationsänderungen der Verkehrsschilder machen, die in realen Szenarien auftreten können.
+Das Modell wurde mit der Adam-Optimierungsmethode trainiert, wobei eine Lernrate von $0.001$ verwendet wurde. Zudem wurde ein
+Learning Rate Scheduler eingesetzt (ReduceLROnPlateau), um die Lernrate bei Stagnation automatisch zu reduzieren.
+
+Die Loss-Funktion ist die kategoriale Kreuzentropie, da es sich um ein Mehrklassen-Klassifikationsproblem handelt.
+Um Overfitting zu vermeiden, wurden Early Stopping und Model Checkpoints verwendet. Diese hatten außerdem den Vorteil, dass
+das bei Bedarf bestimmte Versionen des Modells gespeichert und im Nachhinein genutzt wurden konnten.
+
+\subsection{Modellbewertung}
+Das Modell wurde nach dem Training mit einem separaten Testdatensatz evaluiert. Dabei wurden die Genauigkeit sowie die mittlere
+Konfidenz der Vorhersagen betrachtet. Fehlklassifizierungen wurden ausgegeben, um mögliche Schwachstellen zu identifizieren.
+
+\subsection{Teil Fazit CNN}
+Die Entwicklung der CNN-Architektur folgte keinem strikt vorgegebenen Schema, sondern entstand durch schrittweises Experimentieren.
+Durch Anpassungen und Tests wurde eine Modellstruktur gefunden, die das gewünschte Ergebnis liefert. Die Klassifizierung des
+Finalen Modells war sowohl auf dem Testdatensatz als auch auf dem Output des Lokalisierungsmodells sehr gut.
+
 \subsubsection{Validierung und Limitierungen}
 Um die Ergebnisse manuell auf Anwendbarkeit zu überprüfen wurde eine einfache Anwendung entworfen, welche zufällige Bilder des Datensatzes lädt und alle verfügbaren Modelle anwendet. Ergebnisse mit einer Confidence über einem gestzten Threshold werden dann mit einer Box und dem zugehörigen Label angezeigt, wie in Abbildung~\ref{fig2} zu sehen.
 
