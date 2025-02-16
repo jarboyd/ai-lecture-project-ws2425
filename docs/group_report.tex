@@ -176,6 +176,69 @@ Um die Ergebnisse manuell auf Anwendbarkeit zu überprüfen wurde eine einfache 
 
 Die größte Einschränkung dieses Ansatzes ist die Geschwindigkeit des Modells. Auf durchschnittlicher Laptop-Hardware dauert eine Ausführung etwa 1,7 Sekunden - im Kontext Verkehrsschilderkennung insbesondere auf der Autobahn wäre dies kein akzeptabler Wert. Zudem haben die Modelle mit kleinen Objekten Probleme, da die Erkennungsfenster eine minimale Größe haben.
 
+\section{Lokalisierung mittels Convolutional Neural Network (CNN)}
+
+\subsection{Bounding-Box-Regression}
+Als weiterer Ansatz für die Lokalisierung der Verkehrsschilder sollte ein CNN verwendet
+werden, um sämtliche Schilder effizient aus einem Bild zu extrahieren.
+Der erste Versuch setzte auf eine einfache Bounding-Box-Regression, bei der das Modell
+direkt die Koordinaten der Box vorhergesagt hat. Allerdings lernte das Netz dabei, die
+Box immer in die Bildmitte zu setzen, da es keine explizite Methode zur Lokalisierung hatte. Statt tatsächlich Schilder zu finden, minimierte es den durchschnittlichen Fehler, was dazu führte, dass es eine zentrale Position bevorzugte.
+\\
+Dieser Effekt tritt auf, weil das Modell versucht, die Fehler über alle Trainingsbilder
+hinweg zu minimieren. Wenn sich Schilder an vielen verschiedenen Positionen befinden,
+aber keine klare Methode zur Bestimmung der genauen Position existiert, wählt das
+Modell eine Durchschnittsposition für seine Vorhersagen. Die Bildmitte ist oft die
+statistisch sicherste Wahl, weil sie den kleinsten mittleren Fehler zu allen tatsächlichen
+Positionen liefert und das Modell mit dem Wert des mittleren Fehlers bestimmt wie "gut"
+eine Vorhersage im Training ist. Anstatt dynamisch die richtige Position für jedes Bild
+zu berechnen,
+erkennt das Modell fälschlicherweise ein Muster:
+Es kann den Fehler über viele Bilder hinweg reduzieren, indem es einfach immer eine
+Box mittig platziert, da das Training darauf abzielt, die durchschnittliche
+Abweichung zu minimieren. Ohne eine Möglichkeit, lokale Merkmale effektiv mit einer
+bestimmten Position zu verknüpfen, bleibt das Modell
+in diesem Muster gefangen.
+
+\subsection{Weiterer Ansatz}
+
+Um dieses Problem zu lösen, wurde ein Modell basierend auf einem Faster R-CNN eingesetzt.
+Dieses Modell kombiniert ein klassisches CNN mit einem Mechanismus zur Objekterkennung.
+Anstatt direkt eine Bounding Box vorherzusagen, sucht es zunächst nach wahrscheinlichen
+Objektregionen und bewertet, ob dort ein Verkehrsschild vorhanden ist.
+Dies ermöglicht eine dynamische und adaptive Erkennung, anstatt starr eine feste Position
+zu wählen.
+\\
+Ein wichtiger Bestandteil dieses Modells ist das Backbone, ein CNN, in unserem Fall
+ResNet-50, das als Feature-Extractor dient. Das Backbone verarbeitet das Bild und extrahiert
+wichtige Merkmale, wie Kanten und Formen, die für die Objekterkennung relevant sind.
+Diese abstrahierten Informationen helfen dem nachfolgenden Region Proposal Network (RPN),
+gezielt Bereiche zu identifizieren, in denen sich wahrscheinlich Schilder befinden.
+\\
+Um diesen Ansatz umzusetzen, wurde ein Trainingsmodell mit PyTorch erstellt.
+Zunächst wurde ein Datensatzloader erstellt, der die Trainingsbilder aus einem Ordner lädt
+und die zugehörigen Bounding-Box-Koordinaten aus der Annotationsdatei einliest.
+Das Modell benötigt standardisierte Eingaben, daher werden alle Bilder auf eine feste
+Größe skaliert und die Bounding-Box-Koordinaten ebenfalls entsprechend angepasst.
+\\
+Für das Modell selbst wurde ein Faster R-CNN mit ResNet-50 als Backbone genutzt und dessen
+Head angepasst, um die Erkennung von Verkehrsschildern als einzig relevante Klasse zu
+ermöglichen. Das Modell klassifiziert nur in zwei Klassen: Hintergrund und Verkehrsschild.
+Das Training wurde mit einer Stochastic Gradient Descent (SGD)-Optimierung durchgeführt,
+wodurch die Modellparameter iterativ basierend auf den Gradienten der Verlustfunktion
+angepasst werden. Dabei kam Mixed Precision Training zum Einsatz, um GPU-Berechnungen
+effizienter zu gestalten und Speicher zu sparen. Dies passiert durch den Einsatz von
+16-bit und 32-bit-Floating-Point-Werten, wobei kritische Berechnungen in höherer
+Genauigkeit durchgeführt werden\cite{ref_mixed_precision_nvidia}.
+Das Training wurde über mehrere Epochen hinweg durchgeführt, wobei das Modell die Fehler
+reduzierte und bessere Vorhersagen lieferte. Mit 10 Epochen konnte das Modell schon
+zuverlässig Verkehrsschilder lokalisieren, 20 Epochen haben die Genauigkeit allerdings nur
+marginal verbessert.
+\\
+Nach Abschluss des Trainings wurde das trainierte Modell gespeichert und kann verwendet
+werden, um mehrere Verkehrsschilder in einem Bild zu erkennen. Das Modell gibt für jedes
+gefundene Schild eine Bounding Box mit einer Wahrscheinlichkeit aus.
+
 \section{Recognition mittels Convolutional Neural Network (CNN)}
 Zur Erkennung der Bildklassen/Straßenschilder wurde ein Convolutional Neural Network (CNN) implementiert. Die Architektur des Modells wurde
 durch eine Kombination aus grundlegendem theoretischem Verständnis der einzelnen Schichten und Trial-and-Error entwickelt.
@@ -222,7 +285,7 @@ zwar ein starkes Unterscheidungsmerkmal darstellt, jedoch bei vielen verschieden
 \subsection{Nutzung des trainierten Modells}
 
 Das trainierte Modell wurde im .h5-Format gespeichert, einem von Keras verwendeten Format, das die Serialisierung der
-Modellarchitektur und der Gewichte ermöglicht. Konkret bedeutet dies, dass das .h5-File mittels tf.keras.models.load_model()
+Modellarchitektur und der Gewichte ermöglicht. Konkret bedeutet dies, dass das .h5-File mittels tf.keras.models.load\_model()
 geladen werden kann. Anschließend können Verkehrsschildbilder dem Modell zur Klassifizierung übergeben werden und das Modell
 gibt die vorhergesagte Klasse zurück.
 
@@ -328,6 +391,9 @@ Marton, S.: Grundlagen der KI Foliensatz (2025)
 
 \bibitem{ref_yolo}
 YOLO Framework, \url{https://zenodo.org/records/7347926}, letzter Zugriff 15.02.2025
+
+\bibitem{ref_mixed_precision_nvidia}
+Mixed Precision Training, \url{https://docs.nvidia.com/deeplearning/performance/mixed-precision-training/index.html}, letzter Zugriff 16.02.2025
 
 % \bibitem{ref_lncs1}
 % Author, F., Author, S.: Title of a proceedings paper. In: Editor,
