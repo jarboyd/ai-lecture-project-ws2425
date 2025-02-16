@@ -164,6 +164,18 @@ In einem nächsten Durchlauf wurden die nach Formen getrennten Trainigs- und Tes
 
 Um die Erkennung von kleineren Objekten zu verbssern, kann das Bild hochskaliert werden, jedoch stark auf Kosten des verwendeten Arbeitsspeichers. Die verwendete Bibliothek ist auf eine Weise implementiert, sodass der gesamte Trainingsdatensatz vollständig in den Arbeitsspeicher geladen und hochskaliert wird. Verwendete Hardware limitierte daher auf maximal einfache Verdopplung der Auflösung.
 
+\subsubsection{Validierung und Limitierungen}
+Um die Ergebnisse manuell auf Anwendbarkeit zu überprüfen wurde eine einfache Anwendung entworfen, welche zufällige Bilder des Datensatzes lädt und alle verfügbaren Modelle anwendet. Ergebnisse mit einer Confidence über einem gestzten Threshold werden dann mit einer Box und dem zugehörigen Label angezeigt, wie in Abbildung~\ref{fig2} zu sehen.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{images/example_prediction.png}
+    \caption{Verkehrsschildlokalisation mit HOG und SVM.}
+    \label{fig2}
+\end{figure}
+
+Die größte Einschränkung dieses Ansatzes ist die Geschwindigkeit des Modells. Auf durchschnittlicher Laptop-Hardware dauert eine Ausführung etwa 1,7 Sekunden - im Kontext Verkehrsschilderkennung insbesondere auf der Autobahn wäre dies kein akzeptabler Wert. Zudem haben die Modelle mit kleinen Objekten Probleme, da die Erkennungsfenster eine minimale Größe haben.
+
 \section{Recognition mittels Convolutional Neural Network (CNN)}
 Zur Erkennung der Bildklassen/Straßenschilder wurde ein Convolutional Neural Network (CNN) implementiert. Die Architektur des Modells wurde
 durch eine Kombination aus grundlegendem theoretischem Verständnis der einzelnen Schichten und Trial-and-Error entwickelt.
@@ -199,18 +211,6 @@ Konfidenz der Vorhersagen betrachtet. Fehlklassifizierungen wurden ausgegeben, u
 Die Entwicklung der CNN-Architektur folgte keinem strikt vorgegebenen Schema, sondern entstand durch schrittweises Experimentieren.
 Durch Anpassungen und Tests wurde eine Modellstruktur gefunden, die das gewünschte Ergebnis liefert. Die Klassifizierung des
 Finalen Modells war sowohl auf dem Testdatensatz als auch auf dem Output des Lokalisierungsmodells sehr gut.
-
-\subsubsection{Validierung und Limitierungen}
-Um die Ergebnisse manuell auf Anwendbarkeit zu überprüfen wurde eine einfache Anwendung entworfen, welche zufällige Bilder des Datensatzes lädt und alle verfügbaren Modelle anwendet. Ergebnisse mit einer Confidence über einem gestzten Threshold werden dann mit einer Box und dem zugehörigen Label angezeigt, wie in Abbildung~\ref{fig2} zu sehen.
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{images/example_prediction.png}
-    \caption{Verkehrsschildlokalisation mit HOG und SVM.}
-    \label{fig2}
-\end{figure}
-
-Die größte Einschränkung dieses Ansatzes ist die Geschwindigkeit des Modells. Auf durchschnittlicher Laptop-Hardware dauert eine Ausführung etwa 1,7 Sekunden - im Kontext Verkehrsschilderkennung insbesondere auf der Autobahn wäre dies kein akzeptabler Wert. Zudem haben die Modelle mit kleinen Objekten Probleme, da die Erkennungsfenster eine minimale Größe haben.
 
 %\paragraph{Sample Heading (Fourth Level)}
 %The contribution should contain no more than four levels of
