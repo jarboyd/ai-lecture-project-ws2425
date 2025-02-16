@@ -5,3 +5,11 @@ gtsdb-train.xml
 gtsdb-test.xml
 __pycache__/
 resources/
+
+# latex generated files
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
