@@ -195,9 +195,16 @@ Abschließend übernimmt eine vollständig verbundene (Dense) Schicht mit Softma
 
 \subsection{Training des Modells}
 Die Trainingsbilder wurden zufällig um einen Winkel zwischen -10 und +10 Grad rotiert (layers.RandomRotation(0.1)). Dies soll das Modell
-robuster gegen leichte Drehungen und Orientationsänderungen der Verkehrsschilder machen, die in realen Szenarien auftreten können.
-Das Modell wurde mit der Adam-Optimierungsmethode trainiert, wobei eine Lernrate von $0.001$ verwendet wurde. Zudem wurde ein
+robuster gegen leichte Drehungen und Orientationsänderungen der Verkehrsschilder machen, die in realen Szenarien auftreten können. Ein Beispiel
+hierfür ist in \ref{fig4} zu sehen. Das Modell wurde mit der Adam-Optimierungsmethode trainiert, wobei eine Lernrate von $0.001$ verwendet wurde. Zudem wurde ein
 Learning Rate Scheduler eingesetzt (ReduceLROnPlateau), um die Lernrate bei Stagnation automatisch zu reduzieren.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{images/RandomRotation.png}
+    \caption{Beispiel für zufällige Rotation der Trainingsdaten.}
+    \label{fig4}
+\end{figure}
 
 Die Loss-Funktion ist die kategoriale Kreuzentropie, da es sich um ein Mehrklassen-Klassifikationsproblem handelt.
 Um Overfitting zu vermeiden, wurden Early Stopping und Model Checkpoints verwendet. Diese hatten außerdem den Vorteil, dass
@@ -206,11 +213,24 @@ das bei Bedarf bestimmte Versionen des Modells gespeichert und im Nachhinein gen
 \subsection{Modellbewertung}
 Das Modell wurde nach dem Training mit einem separaten Testdatensatz evaluiert. Dabei wurden die Genauigkeit sowie die mittlere
 Konfidenz der Vorhersagen betrachtet. Fehlklassifizierungen wurden ausgegeben, um mögliche Schwachstellen zu identifizieren.
+Neben der Gesamtperformance des Modells wurde jede Schildklasse einzeln betrachtet, um die Performance des Modells für jede Klasse bewerten zu können.
+
+Durch die Schildklassen betrachtung zeigte sich, dass insbesondere die Kategorie der Verbotszeichen mit der markanten roten
+Diagonalen eine Herausforderung für das Modell darstellten. Diese Schwierigkeit ist vermutlich darauf zurückzuführen, dass die Diagonale
+zwar ein starkes Unterscheidungsmerkmal darstellt, jedoch bei vielen verschiedenen Verbotszeichen vorhanden ist.
+
+\subsection{Nutzung des trainierten Modells}
+
+Das trainierte Modell wurde im .h5-Format gespeichert, einem von Keras verwendeten Format, das die Serialisierung der
+Modellarchitektur und der Gewichte ermöglicht. Konkret bedeutet dies, dass das .h5-File mittels tf.keras.models.load_model()
+geladen werden kann. Anschließend können Verkehrsschildbilder dem Modell zur Klassifizierung übergeben werden und das Modell
+gibt die vorhergesagte Klasse zurück.
 
 \subsection{Teil Fazit CNN}
 Die Entwicklung der CNN-Architektur folgte keinem strikt vorgegebenen Schema, sondern entstand durch schrittweises Experimentieren.
 Durch Anpassungen und Tests wurde eine Modellstruktur gefunden, die das gewünschte Ergebnis liefert. Die Klassifizierung des
 Finalen Modells war sowohl auf dem Testdatensatz als auch auf dem Output des Lokalisierungsmodells sehr gut.
+
 
 %\paragraph{Sample Heading (Fourth Level)}
 %The contribution should contain no more than four levels of
