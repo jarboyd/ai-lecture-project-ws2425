@@ -1,0 +1,55 @@
+% This is samplepaper.tex, a sample chapter demonstrating the
+% LLNCS macro package for Springer Computer Science proceedings;
+% Version 2.21 of 2022/01/12
+%
+\documentclass[runningheads]{llncs}
+%
+\usepackage[german]{babel}
+% T1 fonts will be used to generate the final print and online PDFs,
+% so please use T1 fonts in your manuscript whenever possible.
+% Other font encondings may result in incorrect characters.
+%
+% Used for displaying a sample figure. If possible, figure files should
+% be included in EPS format.
+%
+% If you use the hyperref package, please uncomment the following two lines
+% to display URLs in blue roman font according to Springer's eBook style:
+%
+\begin{document}
+%
+\title{Grundlagen KI Projekt persöhnlicher Report}
+%
+%\titlerunning{Abbreviated paper title}
+% If the paper title is too long for the running head, you can set
+% an abbreviated paper title here
+%
+\author {Julian Sch\"{o}pe}
+%
+% First names are abbreviated in the running head.
+% If there are more than two authors, 'et al.' is used.
+%
+\institute{Technische Universität Clausthal, Clausthal-Zellerfeld 38678, Deutschland}
+%
+\maketitle              % typeset the header of the contribution
+%
+
+%
+%
+\section{Individueller Beitrag}
+Mein Fokus lag auf der Analyse der Ergebnisse und der Bewertung der Resultate. Sowie das Einbringung von Ideen in Brainstorming sessions in Gruppensitzungen.
+\\
+Zuerst habe ich die Ergebnisse der Testläufe gespeichert und in einem eigenen Objektmodell gespeichert, dass alle Ergebnisboxen der Locator Modelle erfasst und die dazugehörigen predictions aus dem Recognition Modell. Danach das ganze in ein pandas Dataframe umgewandelt, um die Ergebnisse besser weiterverarbeiten zu können. Außerdem die Möglichkeit geschaffen die Ergebnisse visuell zu betrachten um sie manuell bewerten und verstehen zu können. 
+\\
+Bei der automatisierten Endauswertung habe ich die Daten begrenzen müssen, da im ersten Schritt der Erkennung, mehr als ein Ergebnis heraus kommt, was zwar richtig sein kann, aber wir dafür keine Label haben da immer nur ein Schild im Bild markiert ist, was wir mit unserem Schilderkennungs CNN vergleichen konnten. Um das zu leisten hätten wir noch manuell weitere Label und Boxen den Bildern hinzuzufügen müssen.
+
+\section{Eigene Arbeitsweise und Reflexion}
+Von den in der Vorlesung vorgestellten Bewertungsmethoden haben sich die confusion matrix und der accuracy score als gut anwendbar herausgestellt. Da sich die Aufgabe der Lokation von Boxen in Bildern deutlich von den bisherigen in den Übungen behandelten Ansätzen unterscheidet, war es nicht trivial zu bestimmen, wie diese am effektivsten zu bewerten ist. 
+\\
+Zum Beispiel ist nicht immer das Ergebnis mit der höchsten Confidence auch das im Bild gelabelte Schild. Sodass die Accuracy der Boxen mit geringster Entfernung zu diesem bis zu 5\% höher ist, als die derjenigen mit der höchsten Confidence. Daher habe ich versucht mehrere Ansätze der Ergebnisauswahl zu betrachten.
+
+\section{Persönliche Entwicklung}
+Vor Beginn der Vorlesung hatte ich keine persöhnlice Berührung mit jedweder Form von KI Entwicklung. Daher war es für mich erstmal schwieriger mich in die Ideen hinter den komplexeren Modellen einzuarbeiten. 
+\\
+Es war insgesamt sehr interessant zu sehen wie an ziemlich jeder Stelle des Projekts (Datenauswahl, Modellgestaltung, Auswertung) es immer wieder Stolpersteine gibt, wenn die Daten nicht ganz genau sauber sind oder mögliche Ungereihmtheiten nicht vollständig berücksichtigt werden. Insgesamt habe ich einen deutlich besseren Einblick in die Modellgestaltung gewonnen und ein Gefühl für die Relevanz von Datenkorrektheit und Verständnis.
+
+\end{document}
