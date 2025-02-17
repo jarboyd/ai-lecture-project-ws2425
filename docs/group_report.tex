@@ -47,16 +47,18 @@ Marvin Stier}
 \maketitle              % typeset the header of the contribution
 %
 \begin{abstract}
-The abstract should briefly summarize the contents of the paper in
-150--250 words.
+Dieser Bericht entstand im Rahmen der Einführung in die Künstliche Intelligenz Vorlesung an der Technischen Universität Clausthal und untersucht die Entwicklung eines Modells zur automatisierten Erkennung von Verkehrsschildern. In einem ersten Schritt wurde ein Datensatz mit gelabeltem Obst analysiert, der sich jedoch als ungeeignet erwies – die Gründe hierfür werden im ersten Teil des Berichts erläutert. Im zweiten Teil wurde ein neuer Datensatz mit Straßenbildern und Verkehrsschildern verwendet. Dazu wurde ein  zweistufiges System entworfen und entwickelt: Ein Modell lokalisiert die Verkehrsschilder im Bild, während ein anderes Modell Schilder klassifiziert. Diese beiden Komponenten wurden in einer Pipeline kombiniert, sodass alle Verkehrsschilder in einem Bild erkannt und klassifiziert werden. Abschließend wurden die Ergebnisse analysiert, wobei sowohl die Stärken als auch die Schwächen des Systems herausgearbeitet wurden.
 
-\keywords{First keyword  \and Second keyword \and Another keyword.}
 \end{abstract}
 %
 %
 %
 \section{Einleitung}
-Da der ursprünglich ausgewählte Datensatz sich, nach ersten Experimenten, als unbrauchbar oder zumindest unvorteilhaft für erste Erfahrungen mit künstlicher Intelligenz herausgestellt hat, ist der folgende Bericht in zwei Teile aufgeteilt. Im ersten Teil werden die Ansätze und Erkenntnisse mit erwähntem verworfenen Datensatz erläutert und im zweiten Teil dann die Arbeit mit dem finalen Datensatz (German Traffic Sign Detection Benchmark).
+Viele moderne Autos können Verkehrschilder erkennen. Zum einen wird angezeigt, welches Verkehrszeichen gilt, zum anderen können neue Assistenten die Informationen hinter einem Verkehrssschild verarbeiten und warnen beispielsweise bei der Übertretung der ausgelesenen Geschwindigkeit. 
+Im Rahmen dieses Projekts wurde eine Verkehrsschilderkennung entwickelt. 
+
+Ursprünglich wählten wir einen ganz anderen Datensatz, der sich nach ersten Experimenten als unbrauchbar oder zumindest unvorteilhaft für erste Erfahrungen mit künstlicher Intelligenz herausgestellt hat, ist der folgende Bericht in zwei Teile aufgeteilt. Im ersten Teil werden die Ansätze und Erkenntnisse mit erwähntem verworfenen Datensatz erläutert und im zweiten Teil dann die Arbeit mit dem finalen Datensatz (German Traffic Sign Detection Benchmark).
+Der gewählte Ansatz besteht aus zwei Komponenten: Ein Modell lokalisiert die Verkehrsschilder in einem Bild, und ein weiteres klassifiziert die erkannten Schilder. Diese Modelle wurden in einer Pipeline zusammengeführt, um eine vollständige Erkennung und Klassifizierung von Verkehrsschildern zu ermöglichen. Zum Abschluss evaluieren wir die Leistungsfähigkeit des Systems und diskutieren dessen Stärken und Schwächen.
 
 \subsection{Verworfener Datensatz}
 Der zuerst ausgewählte Datensatz, Fruit Quality Dataset~\cite{ref_fruit_dataset}, beinhaltet Bilder mit Labeln nach einem Schema, welches typischerweise für YOLO~\cite{ref_yolo} verwendet wird.
@@ -298,15 +300,15 @@ Finalen Modells war sowohl auf dem Testdatensatz als auch auf dem Output des Lok
 
 \subsection{Motivation}
 
-Um einen konkreten Nutzen aus den bereits erstellten Models ziehen zu können, soll nun eine pipeline erstellt werden, die den Prozess der Verkehrsschilderkennung abbildet. 
+Um einen konkreten Nutzen aus den bereits erstellten Modelle ziehen zu können, soll nun eine pipeline erstellt werden, die den Prozess der Verkehrsschilderkennung abbildet. 
 
 \subsection{Umsetzung}
 
-Für die Umsetzung der Pipeline mussten mithilfe des \ref{hog_svm} Localization Models die Verkehrsschilder zuerst geortet werden. Danach wurden sie aus dem Foto ausgeschnitten und dann mit dem \ref{recog_cnn} jeweils erkannt. 
+Für die Umsetzung der Pipeline mussten mithilfe des \ref{hog_svm} Localization Modelles die Verkehrsschilder zuerst geortet werden. Danach wurden sie aus dem Foto ausgeschnitten und dann mit dem \ref{recog_cnn} jeweils erkannt. 
 
 \subsection{Ergebnis}
 
-Die Pipeline ist nun in der Lage, mithilfe der models aus einem Foto die Schilder zu erkennen. Das ergebnis wird in \ref{fig6} an einem Beispiel dargestellt
+Die Pipeline ist nun in der Lage, mithilfe der Modelle aus einem Foto die Schilder zu erkennen. Das ergebnis wird in \ref{fig6} an einem Beispiel dargestellt
 
 \begin{figure}[H]
     \centering
