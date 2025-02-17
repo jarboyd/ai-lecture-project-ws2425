@@ -88,7 +88,7 @@ Der German Traffic Sign Detection Benchmark Datensatz wurde als logische Folgeru
 \subsection{Ansätze}
 Da ein Modell zur Klassifizierung bereits existierte, wurde ein Ansatz gewählt, in welchem ein entworfenes und trainiertes Modell lediglich Bounding Boxes der Schilder ergeben soll. Dafür würde zum einen HOG (Histogram of Oriented Graphs) mit einer SVM (Support Vector Machine) verwendet werden für einen "klassischeren" Machine Learning Approach mithilfe der "dlib"-Bibliothek. Zum anderen würde auch ein auf Lokalisation ausgerichtetes CNN (Convolutional Neural Network) probiert werden. Die Klassifikation würde in beiden Fällen ein nachgelagertes CNN übernehmen.
 
-\subsection{HOG und SVM}
+\subsection{HOG und SVM}\label{hog_svm}
 In diesem ersten Ansatz wird dlib.simple\_object\_detector aus der Bibliothek dlib verwendet, was eine Pipeline für einen Histogram of Oriented Gradients (HOG) basierter Sliding Window Object Detector darstellt~\cite{ref_dlib_docs}, welcher eine Vorhersage mithilfe einer Support Vector Machine (SVM) macht.
 
 \subsubsection{Histogram of Oriented Graphs}
@@ -239,7 +239,7 @@ Nach Abschluss des Trainings wurde das trainierte Modell gespeichert und kann ve
 werden, um mehrere Verkehrsschilder in einem Bild zu erkennen. Das Modell gibt für jedes
 gefundene Schild eine Bounding Box mit einer Wahrscheinlichkeit aus.
 
-\section{Recognition mittels Convolutional Neural Network (CNN)}
+\section{Recognition mittels Convolutional Neural Network (CNN)}\label{recog_cnn}
 Zur Erkennung der Bildklassen/Straßenschilder wurde ein Convolutional Neural Network (CNN) implementiert. Die Architektur des Modells wurde
 durch eine Kombination aus grundlegendem theoretischem Verständnis der einzelnen Schichten und Trial-and-Error entwickelt.
 Während grundlegende Konzepte wie Faltungsschichten (Convolutional Layers), Aktivierungsfunktionen und Batch-Normalisierung
@@ -293,6 +293,39 @@ gibt die vorhergesagte Klasse zurück.
 Die Entwicklung der CNN-Architektur folgte keinem strikt vorgegebenen Schema, sondern entstand durch schrittweises Experimentieren.
 Durch Anpassungen und Tests wurde eine Modellstruktur gefunden, die das gewünschte Ergebnis liefert. Die Klassifizierung des
 Finalen Modells war sowohl auf dem Testdatensatz als auch auf dem Output des Lokalisierungsmodells sehr gut.
+
+\section{Pipeline}
+
+\subsection{Motivation}
+
+Um einen konkreten Nutzen aus den bereits erstellten Models ziehen zu können, soll nun eine pipeline erstellt werden, die den Prozess der Verkehrsschilderkennung abbildet. 
+
+\subsection{Umsetzung}
+
+Für die Umsetzung der Pipeline mussten mithilfe des \ref{hog_svm} Localization Models die Verkehrsschilder zuerst geortet werden. Danach wurden sie aus dem Foto ausgeschnitten und dann mit dem \ref{recog_cnn} jeweils erkannt. 
+
+\subsection{Ergebnis}
+
+Die Pipeline ist nun in der Lage, mithilfe der models aus einem Foto die Schilder zu erkennen. Das ergebnis wird in \ref{fig6} an einem Beispiel dargestellt
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/00004.jpg}
+        \caption{Ausgangsbild}
+        \label{fig6original}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/recognized_signs.png}
+        \caption{Nach Anwendung der Pipeline}
+        \label{fig6result}
+    \end{subfigure}
+    \caption{Ein Ausangsbild und die daraus erkannten Verkehrrsschilder mit Label}
+    \label{fig6}
+\end{figure}
 
 
 %\paragraph{Sample Heading (Fourth Level)}
