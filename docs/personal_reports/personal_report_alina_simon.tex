@@ -1,0 +1,59 @@
+\documentclass[runningheads]{llncs}
+
+\usepackage[german]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{subcaption}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{color}
+\renewcommand\UrlFont{\color{blue}\rmfamily}
+\urlstyle{rm}
+\begin{document}
+\title{Grundlagen KI Projekt persönlicher Report}
+
+\author{Alina Simon}
+
+\authorrunning{Simon, A.}
+
+\institute{Technische Universität Clausthal, Clausthal-Zellerfeld 38678, Deutschland}
+
+\maketitle
+
+\section{Aufgaben}
+Meine Aufgabe in der Gruppe war es, eine Pipeline zu entwickeln, die aus einem Foto abliest, welche Verkehrszeichen darauf zu sehen sind. 
+Dabei sollten sowohl die svm models für die Lokalisierung eines Verkehrsschildes auf einem Foto, als auch ein CNN für die Erkennung eines einzelnen Verkehrsschildes, die ein Teil der Gruppe bereits entwickelt hat, genutzt werden.
+Dafür überlegte ich mir zunächst, wie dieser Prozess aussieht. Meine Überlegungen und Schritte pflegte ich als Überschriften in einem Jupyter Notebook ein, um daraufhin den Code für diese Abschnitte zu schreiben. Ich überlegte mir folgende Struktur: 
+\begin{enumerate}
+  \item Bildimport
+  \item Lokalisierung (Models laden, Bild laden, Model ausführen, Zeichen ausschneiden)
+  \item Erkennung (Bilder vorbereiten, Model laden, Verkehrsschild erkennen, Output)
+\end{enumerate}
+
+\subsection{Bildimport}
+Bei dem Bildimport entschied ich mich, sowohl das Bild als auch den Ordner als Variable zu deklarieren, um dieses Notebook an beliebiger Stelle zu nutzen. Da ich Teile des von uns als Gruppe ausgewählten Datensatzes nutzte, um die Pipeline zu testen, musste ich zuerst das ppm format in ein jpg umwandeln.
+
+\subsection{Lokalisierung}
+Um das Model zu laden, brauchte ich die Library \textbf{dlib}~\cite{ref_dlib_docs}. Hier stoß ich an ein technisches Problem, denn diese Library kann man, zumindest auf Windows, nicht einfach mithilfe von \textbf{pip install} installieren, denn sie braucht einen c++ compiler. Nach einer kleinen Recherche fand ich einen Medium Artikel~\cite{ref_medium}, der mir hilf, dieses Problem zu lösen - auch wenn es zuerst an meiner Geduld scheiterte und ich den Buildvorgang des Wheels für dlib mehrfach abgebrochen hatte, weil ich dachte, dass das doch nicht so lange dauern könnte.
+
+Nachdem ich die Models dann laden konnte und ich mir auch noch einmal das Foto angezeigt habe, mit dem ich arbeitete, habe ich die models auf mein Bild ausgeführt. Dabei habe ich sowohl das gesamte Foto mit den eingezeichneten Bounding Boxes ausgegeben, als auch die jeweiligen erkannten Zeichen in eine Liste gelegt. Zuerst bestand dann diese Liste aus den georteten Zeichen, aber mit eingezeichneter Bounding Box. Dieses Problem löste ich mit einer zweiten Instanz des Fotos, in das keine Bounding Boxes eingezeichnet werden, aus der ich dann die Boxen Ausschnitt.
+Das Ergebnis dieses Schrittes war also eine Liste an nicht gelabelten aber ausgeschnittenen Verkehrszeichen.
+
+\subsection{Erkennung}
+Die Schilderkennung fiel mir deutlich leichter als die Lokalisierung. Hier mussten die Verkehrszeichen noch passend für das Model auf 64*64 zugeschnitten werden. Danach habe ich das Model angewendet, das Ergebnis auf eine Klasse gemappt und zusammen mit dem Bild ausgegeben.
+
+\subsection{Weiterentwicklung}
+Neben der bereits erwähnten Geduld, ein package zu installieren habe ich mich auch fachlich deutlich weiterentwickelt. So lernte ich beim Arbeiten mit den Daten die library \textbf{open cv} ein wenig kennen. Gerade in Bezug auf Bilder lesen, reformatten, und annotieren. Außerdem lernte ich, wie mit fertigen Modellen umgegangen wird, was für mich ein neuer Einblick war.
+
+\begin{thebibliography}{8}
+  \bibitem{ref_dlib_docs}
+  dlib Python Dokumentation, \url{https://dlib.net/python/index.html}, letzter Zugriff 16.02.2025
+
+  \bibitem{ref_medium}
+  How to install dlib library for Python in Windows 10, \url{https://medium.com/analytics-vidhya/how-to-install-dlib-library-for-python-in-windows-10-57348ba1117f}, letzter Zugriff 17.02.2025
+
+  \bibitem{ref_opencv_docs}
+  opencv Python Dokumentation, \url{https://docs.opencv.org/4.x/d6/d00/tutorial_py_root.html}, letzter Zugriff 17.02.2025
+\end{thebibliography}
+\end{document}
